@@ -8,7 +8,7 @@ namespace LessLocationText
         {
         }
 
-        protected override string GetName() => "Hide enter text";
+        protected override string GetName() => "Disable enter text";
 
         protected override void OnToggle()
         {

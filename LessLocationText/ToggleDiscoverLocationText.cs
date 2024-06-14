@@ -8,7 +8,7 @@ namespace LessLocationText
         {
         }
 
-        protected override string GetName() => "Hide discover text";
+        protected override string GetName() => "Disable discover text";
 
         protected override void OnToggle()
         {
