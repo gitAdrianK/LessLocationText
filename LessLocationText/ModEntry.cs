@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using JumpKing.Mods;
 using JumpKing.PauseMenu;
-using LanguageJK;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -58,66 +57,38 @@ namespace LessLocationText
 
             Harmony harmony = new Harmony(HARMONY_IDENTIFIER);
 
-            Type locationTextManager = AccessTools.TypeByName("JumpKing.MiscSystems.LocationText.LocationTextManager");
-            CenteredLocationText = AccessTools.TypeByName("JumpKing.MiscSystems.LocationText.CenteredLocationText").GetConstructor(new[] { typeof(string) });
-            LocationNotification = AccessTools.TypeByName("JumpKing.MiscSystems.LocationText.LocationNotification").GetConstructor(new[] { typeof(string) });
+            Type locationComp = AccessTools.TypeByName("JumpKing.MiscSystems.LocationText.LocationComp");
 
-            MethodInfo locationTextManagerUpdate = locationTextManager.GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Instance);
-            HarmonyMethod customUpdate = new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(CustomUpdate)));
+            MethodInfo pollCurrent = locationComp.GetMethod("PollCurrent");
+            HarmonyMethod pollCurrentPatch = new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(PollCurrentPatch)));
             harmony.Patch(
-                locationTextManagerUpdate,
-                prefix: customUpdate
+                pollCurrent,
+                postfix: pollCurrentPatch
+            );
+
+            MethodInfo pollNewScreen = locationComp.GetMethod("PollNewScreen");
+            HarmonyMethod pollNewScreenPatch = new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(PollNewScreenPatch)));
+            harmony.Patch(
+                pollNewScreen,
+                postfix: pollNewScreenPatch
             );
         }
 
-        public static bool CustomUpdate(object __instance)
+        public static void PollCurrentPatch(ref bool __result)
         {
-            if (!Preferences.ShouldHideDiscover && !Preferences.ShouldHideEnter)
+            if (Preferences.ShouldHideEnter)
             {
-                return true;
+                __result = false;
             }
-
-            var locationComp = Traverse.Create(__instance).Field("m_location_comp").GetValue();
-            Type typeLocationComp = locationComp.GetType();
-            var pollNewScreen = AccessTools.Method(typeLocationComp, "PollNewScreen");
-            var pollCurrent = AccessTools.Method(typeLocationComp, "PollCurrent");
-
-            object[] parameters = new object[] { null };
-            if ((bool)pollNewScreen.Invoke(locationComp, parameters))
-            {
-                if (!Preferences.ShouldHideDiscover)
-                {
-                    string @string = language.ResourceManager.GetString((string)parameters[0]);
-                    if (@string != null)
-                    {
-                        CenteredLocationText.Invoke(new object[] { @string });
-
-                    }
-                    else
-                    {
-                        CenteredLocationText.Invoke(new object[] { (string)parameters[0] });
-                    }
-                }
-            }
-
-            if ((bool)pollCurrent.Invoke(locationComp, parameters))
-            {
-                if (!Preferences.ShouldHideEnter)
-                {
-                    string string2 = language.ResourceManager.GetString((string)parameters[0]);
-                    if (string2 != null)
-                    {
-                        LocationNotification.Invoke(new object[] { string2 });
-                    }
-                    else
-                    {
-                        LocationNotification.Invoke(new object[] { (string)parameters[0] });
-                    }
-                }
-            }
-            return false;
         }
 
+        public static void PollNewScreenPatch(ref bool __result)
+        {
+            if (Preferences.ShouldHideDiscover)
+            {
+                __result = false;
+            }
+        }
         private static void SaveSettingsOnFile(object sender, System.ComponentModel.PropertyChangedEventArgs args)
         {
             try
