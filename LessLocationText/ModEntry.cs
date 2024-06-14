@@ -18,9 +18,6 @@ namespace LessLocationText
         private static string AssemblyPath { get; set; }
         public static Preferences Preferences { get; private set; }
 
-        private static ConstructorInfo CenteredLocationText { get; set; }
-        private static ConstructorInfo LocationNotification { get; set; }
-
         [MainMenuItemSetting]
         [PauseMenuItemSetting]
         public static ToggleDiscoverLocationText ToggleDiscover(object factory, GuiFormat format)
