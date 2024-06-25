@@ -57,18 +57,16 @@ namespace LessLocationText
             Type locationComp = AccessTools.TypeByName("JumpKing.MiscSystems.LocationText.LocationComp");
 
             MethodInfo pollCurrent = locationComp.GetMethod("PollCurrent");
-            HarmonyMethod pollCurrentPatch = new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(PollCurrentPatch)));
+            HarmonyMethod pollCurrentPatch = new HarmonyMethod(typeof(ModEntry).GetMethod(nameof(PollCurrentPatch)));
             harmony.Patch(
                 pollCurrent,
-                postfix: pollCurrentPatch
-            );
+                postfix: pollCurrentPatch);
 
             MethodInfo pollNewScreen = locationComp.GetMethod("PollNewScreen");
-            HarmonyMethod pollNewScreenPatch = new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(PollNewScreenPatch)));
+            HarmonyMethod pollNewScreenPatch = new HarmonyMethod(typeof(ModEntry).GetMethod(nameof(PollNewScreenPatch)));
             harmony.Patch(
                 pollNewScreen,
-                postfix: pollNewScreenPatch
-            );
+                postfix: pollNewScreenPatch);
         }
 
         public static void PollCurrentPatch(ref bool __result)
