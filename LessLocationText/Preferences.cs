@@ -1,38 +1,36 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
 namespace LessLocationText
 {
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+
     public class Preferences : INotifyPropertyChanged
     {
-        private bool _shouldHideDiscover = false;
-        private bool _shouldHideEnter = false;
+        private bool shouldHideDiscover = false;
+        private bool shouldHideEnter = false;
 
         public bool ShouldHideDiscover
         {
-            get => _shouldHideDiscover;
+            get => this.shouldHideDiscover;
             set
             {
-                _shouldHideDiscover = value;
-                OnPropertyChanged();
+                this.shouldHideDiscover = value;
+                this.OnPropertyChanged();
             }
         }
 
         public bool ShouldHideEnter
         {
-            get => _shouldHideEnter;
+            get => this.shouldHideEnter;
             set
             {
-                _shouldHideEnter = value;
-                OnPropertyChanged();
+                this.shouldHideEnter = value;
+                this.OnPropertyChanged();
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
